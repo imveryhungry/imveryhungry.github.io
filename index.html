@@ -13087,8 +13087,8 @@ div#notebook {
 <div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Introduction">Introduction<a class="anchor-link" href="#Introduction">&#182;</a></h2><p>Cooking recipes are a fascinating type of data. A single recipe is rich in data; it has a list of ingredients, nutrition information(calories,fat,protein,sodium,etc), ratings, and in some cases, a site may even use tags to categorize their recipes. Ratings of food and their recipes seems almost completely subjective and up to the individual. Perhaps they depend simply on one's enjoyment of the dish or maybe the simplicity of a recipe. Either way, I'd like to make an attempt to look at recipes not from a subjective human standpoint but from a data-driven one. Other than being an avid cook, this topic piqued my interest because of how unique it was. From the structure of the data to the unpredictability of the relationships between variables, I'm excited to see what I can find.</p>
 <h2 id="Data-Acquisition">Data Acquisition<a class="anchor-link" href="#Data-Acquisition">&#182;</a></h2><p>This <a href="https://www.kaggle.com/hugodarwood/epirecipes">dataset</a> was acquired from Kaggle.com, a popular data science site where users can share data sets and their explorations with them. This dataset was made by Kaggle user Hugo Darwood who scraped Epicurious, a cooking website/blog.</p>
-<p>We should keep in mind that this dataset is from 2016 so somethings may be outdated compare to the Epicurious site and alot of our findings will likely be catered specifically to Epicurious.</p>
-<h2 id="Packages/Libraries">Packages/Libraries<a class="anchor-link" href="#Packages/Libraries">&#182;</a></h2><p>Before we get started, let's establish the packages/libraries we will be using. Reasons for each package listed next to it.</p>
+<p>We should keep in mind that this dataset is from 2016 so some things may be outdated and alot of our findings will likely be catered specifically to Epicurious.</p>
+<h2 id="Packages/Libraries">Packages/Libraries<a class="anchor-link" href="#Packages/Libraries">&#182;</a></h2><p>Before we get started, let's establish the packages/libraries we will be using. Reasons for using each package listed next to it.</p>
 
 </div>
 </div>
@@ -13129,7 +13129,8 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[2]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">food_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;food/food_data.csv&quot;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Read CSV file we got from Kaggle</span>
+<span class="n">food_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;food/food_data.csv&quot;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
 <span class="n">food_data</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </pre></div>
 
@@ -13325,7 +13326,7 @@ div#notebook {
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Data-Cleaning-and-Tidying">Data Cleaning and Tidying<a class="anchor-link" href="#Data-Cleaning-and-Tidying">&#182;</a></h2><h5 id="Here-are-the-list-of-things-we-need-to-do-about-this-dataset:">Here are the list of things we need to do about this dataset:<a class="anchor-link" href="#Here-are-the-list-of-things-we-need-to-do-about-this-dataset:">&#182;</a></h5><ul>
+<h2 id="Data-Cleaning-and-Tidying">Data Cleaning and Tidying<a class="anchor-link" href="#Data-Cleaning-and-Tidying">&#182;</a></h2><h4 id="Here-are-the-list-of-things-we-need-to-do-about-this-dataset:">Here are the list of things we need to do about this dataset:<a class="anchor-link" href="#Here-are-the-list-of-things-we-need-to-do-about-this-dataset:">&#182;</a></h4><ul>
 <li>Convert all the tag columns to be integers instead of floats for better performance and to better represent them as binary variables.</li>
 <li>Remove rows with unrealistic values for nutrition, "unrealistic" values listed as comments.</li>
 <li>Normally, we shouldn't just remove the rows with missing data(NaN) but it's hard to classify them as MNAR,MCAR, or MAR as we didn't handle data acquisition, so we will remove the NaN rows.</li>
@@ -13429,19 +13430,31 @@ div#notebook {
 <div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Exploratory-Data-Analysis">Exploratory Data Analysis<a class="anchor-link" href="#Exploratory-Data-Analysis">&#182;</a></h2><h4 id="Some-Summary-Statistics">Some Summary Statistics<a class="anchor-link" href="#Some-Summary-Statistics">&#182;</a></h4><p>First let's look at the distributions of all our variables:</p>
 <ul>
-<li><p><strong>Rating</strong>: seems to be normally distributed centered in the range <strong>4 to 4.5</strong>. There are also some outliers in 0 but it's not enough that I'd consider it bimodal.</p>
+<li><p><strong>Rating</strong>: seems to be normally distributed centered in the range <strong>4 to 4.5</strong>. There are also some outliers near 0 but it's not enough that I'd consider it bimodal.</p>
 <ul>
-<li>Additionally, <strong>1 to 3 star ratings are virtually non-existent.</strong></li>
+<li>Additionally, <strong>1 to 3-star ratings are virtually non-existent.</strong></li>
 </ul>
 </li>
 <li><p><strong>Calories, Protein, Fat, Sodium</strong>: All seem to be normally distributed and skewed right.</p>
 <ul>
-<li>Sodium has a very wide range of values</li>
-<li>Protein, fat, and sodium tend to be closer to 0</li>
-<li>Caloties has the most "normal" distribution and is not centered that close to 0</li>
+<li>Sodium has a very wide range of values.<ul>
+<li>Recipes tend to be very diverse in sodium levels.</li>
+</ul>
+</li>
+<li>Protein, fat, and sodium tend to be closer to 0.<ul>
+<li>Most recipes have very low amounts of protein, fat, and sodium.</li>
+</ul>
+</li>
+<li>Calories has the most "normal" distribution and is centered around 400.<ul>
+<li>Most recipes have on average 400 calories.</li>
+</ul>
+</li>
 </ul>
 </li>
 <li><p><strong>Tag Count</strong>: Looks almost bimodal with the larger peak centered at 8 and the smaller peak at 15.</p>
+<ul>
+<li>This just means most recipes have tags that are around 8 or 15.</li>
+</ul>
 </li>
 </ul>
 
@@ -13527,7 +13540,8 @@ div#notebook {
 <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">tags_count</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
     <span class="n">plot_tags</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
     <span class="n">plot_count</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
-    
+
+<span class="c1"># set plot size and color scheme</span>
 <span class="n">sns</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">rc</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;figure.figsize&#39;</span><span class="p">:(</span><span class="mf">11.7</span><span class="p">,</span><span class="mf">10.27</span><span class="p">),</span><span class="s2">&quot;axes.labelsize&quot;</span><span class="p">:</span><span class="mi">2</span><span class="p">})</span>
 <span class="n">sns</span><span class="o">.</span><span class="n">color_palette</span><span class="p">(</span><span class="s2">&quot;mako&quot;</span><span class="p">)</span>
 <span class="c1"># Use seaborn to plot bar plot</span>
@@ -13580,8 +13594,8 @@ div#notebook {
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p><strong>Observations</strong>: It appears that the most popular tags tend to be related to <strong>dietary restrictions</strong> and make up around <strong>20 to 40% of most recipes</strong>. Also in case you are wondering why <strong>Bon Appetit</strong> is the number one result, <strong>Bon Appetit</strong> is the name of the popular food magazine that owns Epicurious.</p>
-<h3 id="Let's-start-exploring-their-relationships!">Let's start exploring their relationships!<a class="anchor-link" href="#Let's-start-exploring-their-relationships!">&#182;</a></h3><p>First, let's explore the relationship between <strong>Ratings</strong> and <strong>Calories/Protein/Fat/Sodium/Count of Tags</strong>. We'll make scatterplots using <strong>seaborn</strong> and they come with automatic regression lines. Also, something important to note is these visuals are not completely accurate. I've added <strong>jitters</strong> to the points to spread them so we can see which parts of the scatterplot are more concentrated.</p>
+<p><strong>Observations</strong>: It appears that the most popular tags tend to be related to <strong>dietary restrictions</strong> and can make up anywhere from <strong>10 to 40% of most recipes</strong>. In case you are wondering why <strong>Bon Appetit</strong> is the number one result, <strong>Bon Appetit</strong> is the name of the popular food magazine that owns Epicurious so it's high frequency is expected.</p>
+<h3 id="Let's-start-exploring-their-relationships!">Let's start exploring their relationships!<a class="anchor-link" href="#Let's-start-exploring-their-relationships!">&#182;</a></h3><p>First, let's explore the relationship between <strong>Ratings</strong> and <strong>Calories/Protein/Fat/Sodium/Count of Tags</strong>. We'll make scatterplots using <strong>seaborn</strong> and they come with automatic regression lines. Something important to note is these visuals are not completely accurate. I've added <strong>jitters</strong> to the points which randomly spreads them by a certain range so we can see which parts of the scatterplot are more concentrated.</p>
 
 </div>
 </div>
@@ -13596,6 +13610,8 @@ div#notebook {
 <span class="n">fig</span><span class="o">.</span><span class="n">set_size_inches</span><span class="p">(</span><span class="mf">18.5</span><span class="p">,</span> <span class="mf">15.5</span><span class="p">)</span>
 <span class="n">fig</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">(</span><span class="n">hspace</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">wspace</span><span class="o">=</span><span class="mf">0.4</span><span class="p">)</span>
 <span class="n">predictors</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;calories&quot;</span><span class="p">,</span><span class="s2">&quot;protein&quot;</span><span class="p">,</span><span class="s2">&quot;fat&quot;</span><span class="p">,</span><span class="s2">&quot;sodium&quot;</span><span class="p">,</span><span class="s2">&quot;tags_count&quot;</span><span class="p">]</span>
+
+<span class="c1"># For each predictor, make a subplot and add jitters to it</span>
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">predictors</span><span class="p">)):</span> 
     <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">ylim</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
@@ -13641,7 +13657,10 @@ div#notebook {
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><strong>Observations</strong>:</p>
 <ul>
-<li>It's hard to see how much each predictor affects ratings simply from the slope of the lines as they all operate on different scales with different units(E.g an increase in 1 tag is not comparable to an increase in 1 gram of sodium)</li>
+<li>It's hard to see how much each predictor affects ratings simply from the slope of the lines as they all operate on different scales with different units.<ul>
+<li>E.g an increase in 1 tag is not comparable to an increase in 1 gram of sodium when talking about their impact of rating.</li>
+</ul>
+</li>
 <li>It looks like these relationships are linear and we will not need to use polynomials for regression.</li>
 <li><strong>Calories,Protein, and Fat</strong> seem to have a positive correlation with Ratings and very large spreads so they are likely to be poor predictors.</li>
 <li><strong>Sodium and Tags Count</strong> seem to have a positive correlation with Ratings and a small spread. These are likely to be better predictors.</li>
@@ -13653,7 +13672,7 @@ div#notebook {
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Multiple-Linear-Regression">Multiple Linear Regression<a class="anchor-link" href="#Multiple-Linear-Regression">&#182;</a></h3><p>So let's start with a simple regression.</p>
+<h3 id="Multiple-Linear-Regression">Multiple Linear Regression<a class="anchor-link" href="#Multiple-Linear-Regression">&#182;</a></h3><p>The graphs before were simple linear regressions. They were plotted with only 1 predictor and 1 response. Therefore, our previous results may not be that accurate, so let's plot a multiple linear regression. I like to structure all my regression models in the form of a question for easier interpretation, so let's jump right in!</p>
 <h4 id="Question:-Can-we-predict-ratings-using-just-nutrition-information(calories,-protein,-fat,-sodium)?">Question: Can we predict ratings using just nutrition information(calories, protein, fat, sodium)?<a class="anchor-link" href="#Question:-Can-we-predict-ratings-using-just-nutrition-information(calories,-protein,-fat,-sodium)?">&#182;</a></h4><ol>
 <li>First, we need to split the data into a training set and a testing set. We'll use the training set to build the model and the testing set to evaluate it's predictive performance. We are using 80% of our data for the training and 20% for the testing.</li>
 <li>Next, we'll be using the <strong>statsmodel</strong> package to run a regression. We are using <strong>Rating</strong> as our dependent variable and <strong>Calories, Protein, Fat, Sodium</strong> as our predictors.</li>
@@ -13667,10 +13686,12 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[7]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">tags</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">food_data</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="mi">6</span><span class="p">:])</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># separate tag columns for future use</span>
+<span class="n">tags</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">food_data</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="mi">6</span><span class="p">:])</span>
+<span class="c1"># use separate data table instead of main one</span>
 <span class="n">X</span> <span class="o">=</span> <span class="n">food_data</span><span class="p">[[</span><span class="s1">&#39;calories&#39;</span><span class="p">,</span><span class="s1">&#39;protein&#39;</span><span class="p">,</span><span class="s1">&#39;fat&#39;</span><span class="p">,</span><span class="s1">&#39;sodium&#39;</span><span class="p">,</span><span class="s1">&#39;tags_count&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">tags</span><span class="p">]</span>
 <span class="n">Y</span> <span class="o">=</span> <span class="n">food_data</span><span class="p">[</span><span class="s1">&#39;rating&#39;</span><span class="p">]</span>
-<span class="c1"># split data </span>
+<span class="c1"># split data into 80% and 20%</span>
 <span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">Y_train</span><span class="p">,</span> <span class="n">Y_test</span> <span class="o">=</span> <span class="n">model_selection</span><span class="o">.</span><span class="n">train_test_split</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=.</span><span class="mi">2</span><span class="p">)</span>
     
 <span class="n">X_temp</span> <span class="o">=</span> <span class="n">X_train</span><span class="p">[[</span><span class="s1">&#39;calories&#39;</span><span class="p">,</span><span class="s1">&#39;protein&#39;</span><span class="p">,</span><span class="s1">&#39;fat&#39;</span><span class="p">,</span><span class="s1">&#39;sodium&#39;</span><span class="p">]]</span> 
@@ -13770,12 +13791,12 @@ div#notebook {
 <div class="text_cell_render border-box-sizing rendered_html">
 <h5 id="Observations:">Observations:<a class="anchor-link" href="#Observations:">&#182;</a></h5><ol>
 <li>From the t-tests of our predictors, it seems all of our variables are significant predictors.</li>
-<li>From the coefficients, calories and sodium contribute to a higher rating while protein and fat contribute to a lower rating. </li>
+<li>From the coefficients, <strong>calories and sodium</strong> contribute to a higher rating while <strong>protein and fat</strong> contribute to a lower rating. Note that this is different from our previous observation.</li>
 <li>The R-squared of the value is about <strong>50%</strong>, meaning our model only explains the variance of only half the points which is a sign that our model's predictive power is not very good.</li>
 </ol>
-<p>So our model isn't the best but let's try using it to predict anyways.Two of the most popular metrics used to evaluate the predictive performance of a regression are <strong>MAE</strong> and <strong>RMSE</strong>.</p>
-<p><strong>Mean Absolute Error(MAE)</strong> is the average amount our prediction differs from the actual result.(We'll use this mainly as it is easier to interpret)
-<strong>Root Mean Square Error(RMSE)</strong> is the average of the squared error. RMSE compared to MAE penalizes large errors far more.</p>
+<p>So our model isn't the best but let's try using it to predict anyways. Two of the most popular metrics used to evaluate the predictive performance of a regression are <strong>MAE</strong> and <strong>RMSE</strong>.</p>
+<p><strong>Mean Absolute Error(MAE)</strong> is the average amount our prediction differs from the actual result.(We'll use this mainly as it is easier to interpret)</p>
+<p><strong>Root Mean Square Error(RMSE)</strong> is the average of the squared error. RMSE compared to MAE penalizes large errors far more.</p>
 
 </div>
 </div>
@@ -13822,7 +13843,7 @@ div#notebook {
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>From our MAE result, our model on average predicts ratings with an error rate of <strong>2.47</strong>(and our Rating's only go from 0 to 5 so it's around half of our entire range!). Our model is predicting things very inaccurately.</p>
+<p>From our MAE result, our model on average predicts ratings with an error of <strong>2.47</strong>(and our Rating's only go from 0 to 5 so it's around half of our entire range!). Our model is predicting things very inaccurately.</p>
 <h4 id="Decision:-No,-nutrition-information-alone-is-not-enough-to-predict-Rating-but-let's-try-again-with-more-variables.">Decision: No, nutrition information alone is not enough to predict Rating but let's try again with more variables.<a class="anchor-link" href="#Decision:-No,-nutrition-information-alone-is-not-enough-to-predict-Rating-but-let's-try-again-with-more-variables.">&#182;</a></h4>
 </div>
 </div>
@@ -13989,19 +14010,18 @@ div#notebook {
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>This time our MAE is a lot lower but it is still fairly high. It is predicting ratings and being off by <strong>1.3</strong>.</p>
-<h5 id="Decision:-Technically,-yes-we-can-but-the-predictive-accuracy-is-not-very-high.">Decision: Technically, yes we can but the predictive accuracy is not very high.<a class="anchor-link" href="#Decision:-Technically,-yes-we-can-but-the-predictive-accuracy-is-not-very-high.">&#182;</a></h5>
+<h4 id="Decision:-Technically,-yes-we-can-but-the-predictive-accuracy-is-not-very-high.-We-can-do-better,-let's-now-try-including-the-tags-as-categorical-predictors.">Decision: Technically, yes we can but the predictive accuracy is not very high. We can do better, let's now try including the tags as categorical predictors.<a class="anchor-link" href="#Decision:-Technically,-yes-we-can-but-the-predictive-accuracy-is-not-very-high.-We-can-do-better,-let's-now-try-including-the-tags-as-categorical-predictors.">&#182;</a></h4>
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Let's try improving the model!</p>
 <h4 id="New-Question:-Can-we-predict-ratings-using-nutrition-information,-the-number-of-tags,-and-specific-tags?">New Question: Can we predict ratings using nutrition information, the number of tags, and specific tags?<a class="anchor-link" href="#New-Question:-Can-we-predict-ratings-using-nutrition-information,-the-number-of-tags,-and-specific-tags?">&#182;</a></h4><ol>
-<li>We are using Rating as our dependent variable and Calories, Protein, Fat, Sodium, and almost 700 tags as our predictors.</li>
+<li>We are using Rating as our dependent variable and Calories, Protein, Fat, Sodium, the number of tags and almost 700 tags as our predictors.</li>
 <li>Odds are, a lot of those tags will not be significant predictors. To make the best model, we will remove the variables that are not significant. There are many methods for variable selection but I will be using <strong>Backward Elimination</strong> to remove all variables below 5%. After removing or inserting variables in a model, it needs to be refitted so expect the code to take a while like 10 minutes to finish.</li>
 </ol>
-<p>For more info on Backward Elimination, I recommend checking out this <a href="https://towardsdatascience.com/backward-elimination-for-feature-selection-in-machine-learning-c6a3a8f8cef4">Towards Data Science blog</a> which explains it pretty well.</p>
+<p>For more info on Backward Elimination, I recommend checking out this <a href="https://towardsdatascience.com/backward-elimination-for-feature-selection-in-machine-learning-c6a3a8f8cef4">Towards Data Science blog</a> which explains it pretty well. Variable selection methods are extremely useful especially when building regression models.</p>
 
 </div>
 </div>
@@ -14011,7 +14031,8 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[11]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">X_temp</span> <span class="o">=</span> <span class="n">X_test</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">deep</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Made a copy because we are going to be removing variables as we go</span>
+<span class="n">X_temp</span> <span class="o">=</span> <span class="n">X_test</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">deep</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
 <span class="n">Y_temp</span> <span class="o">=</span> <span class="n">Y_test</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">deep</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
 
 <span class="c1"># Helper method for Backward Elimination</span>
@@ -14027,8 +14048,10 @@ div#notebook {
 <span class="c1"># Backward Elimination Code</span>
 <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">divide</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">,</span><span class="n">invalid</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">):</span>
     <span class="k">while</span> <span class="n">insignificant_feature</span><span class="p">:</span>
+            <span class="c1"># fit regression</span>
             <span class="n">model</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">OLS</span><span class="p">(</span><span class="n">Y_temp</span><span class="p">,</span> <span class="n">X_temp</span><span class="p">)</span>
             <span class="n">results</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+            <span class="c1"># find significant variables</span>
             <span class="n">significant</span> <span class="o">=</span> <span class="p">[</span><span class="n">p_value</span> <span class="o">&lt;</span> <span class="mf">0.05</span> <span class="k">for</span> <span class="n">p_value</span> <span class="ow">in</span> <span class="n">results</span><span class="o">.</span><span class="n">pvalues</span><span class="p">]</span>
             <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">significant</span><span class="p">):</span>
                 <span class="n">insignificant_feature</span> <span class="o">=</span> <span class="kc">False</span>
@@ -14180,7 +14203,7 @@ strong multicollinearity problems or that the design matrix is singular.
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h5 id="Observations:">Observations:<a class="anchor-link" href="#Observations:">&#182;</a></h5><ol>
+<h4 id="Observations:">Observations:<a class="anchor-link" href="#Observations:">&#182;</a></h4><ol>
 <li>Only 88 out of our 680 of original predictors, which is about <strong>14%</strong>, were significant predictors. </li>
 <li>Protein, Sodium, and the number of tags seem to be significant predictors in our final model. </li>
 <li>The R-squared of the value is now <strong>90%</strong>, meaning our model explains most of the variance. This is a good sign.</li>
@@ -14199,6 +14222,7 @@ strong multicollinearity problems or that the design matrix is singular.
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Get predictors that weren&#39;t remove by Backward Elimination</span>
 <span class="n">filtered_predictors</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
 <span class="n">X_temp</span> <span class="o">=</span> <span class="n">X_test</span><span class="p">[</span><span class="n">filtered_predictors</span><span class="p">]</span> 
+<span class="c1"># Predict using test data</span>
 <span class="n">predicted</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_temp</span><span class="p">)</span>
 <span class="n">actual</span> <span class="o">=</span> <span class="n">Y_test</span>
 
@@ -14234,7 +14258,7 @@ strong multicollinearity problems or that the design matrix is singular.
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Our MAE is a lot lower now. Our predictions of rating are only off by <strong>0.9</strong> which is a lot better compare to what we started with!</p>
+<p>Our MAE is a lot lower now. Our predictions of rating are only off by <strong>0.9</strong> which is a lot better compare to what we started with! There are probably more things we could try to improve the model, but I'll stop here.</p>
 <h4 id="Decision:-We-originally-asked-if-we-could-use-ALL-of-our-predictors,-so-the-answer-is-no.-But-we-can-use-protein,-sodium,-the-number-of-tags,-and-85-of-the-tags-to-predict-ratings-with-a-relatively-high-accuracy.">Decision: We originally asked if we could use ALL of our predictors, so the answer is no. But we can use protein, sodium, the number of tags, and 85 of the tags to predict ratings with a relatively high accuracy.<a class="anchor-link" href="#Decision:-We-originally-asked-if-we-could-use-ALL-of-our-predictors,-so-the-answer-is-no.-But-we-can-use-protein,-sodium,-the-number-of-tags,-and-85-of-the-tags-to-predict-ratings-with-a-relatively-high-accuracy.">&#182;</a></h4><h2 id="So-what-tags-contributes-to-higher-Ratings-for-cooking-recipes?">So what tags contributes to higher Ratings for cooking recipes?<a class="anchor-link" href="#So-what-tags-contributes-to-higher-Ratings-for-cooking-recipes?">&#182;</a></h2>
 </div>
 </div>
@@ -14312,13 +14336,15 @@ strong multicollinearity problems or that the design matrix is singular.
 <h4 id="Interesting-Observations:">Interesting Observations:<a class="anchor-link" href="#Interesting-Observations:">&#182;</a></h4><ol>
 <li><p>When <strong>Meatball</strong> is included as a tag in a recipe, it's rating is expected to go down by <strong>-5.59</strong>! This number is surprising especially when you consider Rating is only between 0 and 5. The only explanation for why it's greater than 5 that I can think of is that other tags present for meatball recipes tend to boost it's rating up.</p>
 </li>
-<li><p>The top 3 tags(radicchio,wasabi, and hummus) can be categorized as healthy and trendy ingredients. While there isn't enough data to make a concrete judgement, it's possible the healthy, trendy cooking reflects the Epicurious userbase. Users also like recipes that are 22-minute meals.</p>
+<li><p>The top 3 tags(radicchio,wasabi, and hummus) could be categorized as healthy and trendy ingredients(this is just speculation though). While there isn't enough data to make any conclusions, it's possible the healthy and trendy cooking reflects the Epicurious userbase.</p>
+</li>
+<li><p>Users also seem to rate 22-minute recipes higher.</p>
 </li>
 <li><p>Alcohol seems to be an influential tag in general. 7 of the bottom 20 are alcohol related: gin,liquer,spirit,apeitif,campari,chartreuse,spritzer. 3 of the top 20 include whiskey, fortified wine, and margharitas.</p>
 </li>
-<li><p>Jicama and Cardamom are associated with lower ratings and both are known to be "acquired tastes".</p>
+<li><p>Jicama and Cardamom are associated with lower ratings and from a quick Google search both are somewhat "acquired tastes".</p>
 </li>
-<li><p>There is a lot of weird randomness in the data.</p>
+<li><p>There is a lot of weird randomness in the data. I'll mention this in my reflection but I really wish there was an easy way to categorize the tags as I feel it will help me make sense of these odd observations.</p>
 <ul>
 <li>Events/Occasions like Diwali, Christmas Eve, St Patricks Day, Mother's Day, Mardi Gras, and Halloween have a surprisingly large impact on ratings.</li>
 <li>Philippines is the only location tag considered significant and it's associated with lower ratings.</li>
@@ -14346,19 +14372,6 @@ strong multicollinearity problems or that the design matrix is singular.
 
 </div>
 </div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span> 
-</pre></div>
-
-    </div>
-</div>
-</div>
-
 </div>
     </div>
   </div>
